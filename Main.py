@@ -127,7 +127,7 @@ X_train,X_test,y_train,y_test=train_test_split(ids,labels,test_size=0.1)
 with strategy.scope():
 
     model = crear_modelo()
-    optim=keras.optimizers.Adam(learning_rate=0.001)
+    optim=keras.optimizers.Adam(learning_rate=0.0001)
     metrics=[keras.metrics.CategoricalAccuracy(name="Categorical_accuracy"),
             keras.metrics.TruePositives(name='tp'),
             keras.metrics.FalsePositives(name='fp'),
@@ -141,7 +141,7 @@ for i in range(10000+1):
     create_batch(X_test,y_test,BATCH_SIZE,prueba=True)
 
     model.fit(input_fn(),epochs=10,steps_per_epoch=10)
-    model.evaluate(input_fn(prueba=True),epochs=10,steps_per_epoch=10)
+    model.evaluate(input_fn(prueba=True),steps_per_epoch=10)
     if i%100==0:
         model.save("modelo.h5")
         # model.evaluate(x_test,Y_test)
