@@ -97,10 +97,7 @@ feature_extractor_url="https://tfhub.dev/google/imagenet/resnet_v1_101/feature_v
 with strategy.scope():
     feature_extractor_layer = hub.KerasLayer(feature_extractor_url,input_shape=(224,224,3))
     feature_extractor_layer.trainable = False
-
-    model = tf.keras.Sequential([
-                feature_extractor_layer,
-                layers.Dense(len(set_labels), activation=keras.activations.hard_sigmoid,dtype=tf.float32)])
+    model = tf.keras.Sequential([feature_extractor_layer,layers.Dense(len(set_labels), activation=keras.activations.hard_sigmoid,dtype=tf.float32)])
 
     optim=keras.optimizers.Adam(learning_rate=0.001)
     metrics=[keras.metrics.CategoricalAccuracy(name="Categorical_accuracy"),
@@ -122,5 +119,3 @@ for i in range(10000+1):
 
 
 
-
-pass
