@@ -2,13 +2,15 @@ import tensorflow as tf
 import tensorflow_hub as hub
 from tensorflow.keras import layers
 from tensorflow import keras
+import cv2
+import pickle
 import pandas as pd
-images_path ="D:\miia4406-movie-genre-classification\images"
-df_train =open("D:\miia4406-movie-genre-classification/dataTraining.csv").readlines()
+images_path ="../images"
+df_train =open("../dataTraining.csv").readlines()
 # df_test =open("D:\miia4406-movie-genre-classification/dataTesting.csv").readlines()
+PATH_TO_BATCH="BATCH"
+
 TPU_WORKER = 'grpc://10.240.1.2:8470'
-
-
 resolver = tf.distribute.cluster_resolver.TPUClusterResolver(tpu=TPU_WORKER)
 tf.config.experimental_connect_to_cluster(resolver)
 tf.tpu.experimental.initialize_tpu_system(resolver)
@@ -35,6 +37,28 @@ def give_label(string):
     for i in cos1:
         set_labels.add(i.strip())
     return cos.strip()
+
+def create_batch(X,Y,batch_size,tupl=False):
+    sub_x=np.zeros((batch_size,224,224,3))
+    sub_y=np.zeros((batch_size,24))
+    indices=np.random.choice(range(len(Y)),batch_size)
+    j=0
+    for i in indices:
+        im =cv2.imread(X[i].replace("\"","")+".jpeg")
+        im=cv2.resize(im,(224,224))
+        sub_x[j,:,:,:]=im
+        temp = np.zeros(24)
+        temp[Y[i]]=1
+        sub_y[j,:]=temp
+        j+=1
+
+    data= tf.data.Dataset.from_tensor_slices((tf.constant(sub_x, dtype=tf.float32), tf.constant(sub_y, dtype=tf.float32))).batch(10)
+    tupla=tf.constant(sub_x,dtype=tf.float32),tf.constant(sub_y,dtype=tf.float32)
+    if not tupl:
+        return data
+    with open(PATH_TO_BATCH,"w+b") as fp :
+        pickle.dump((sub_x,sub_y),fp)
+
 
 def input_fn(batch_size=16):
     """An input_fn to parse 28x28 images from filename using tf.data."""
