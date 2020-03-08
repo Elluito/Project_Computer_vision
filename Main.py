@@ -2,9 +2,10 @@ import tensorflow as tf
 import tensorflow_hub as hub
 from tensorflow.keras import layers
 from tensorflow import keras
-import cv2
+# import cv2
 import pickle
 from sklearn.model_selection import train_test_split
+from scipy.misc import imread,imresize
 
 import pandas as pd
 images_path ="../images"
@@ -46,8 +47,8 @@ def create_batch(X,Y,batch_size,tupl=False):
     indices=np.random.choice(range(len(Y)),batch_size)
     j=0
     for i in indices:
-        im =cv2.imread(X[i].replace("\"","")+".jpeg")
-        im=cv2.resize(im,(224,224))
+        im =imread(X[i].replace("\"","")+".jpeg")
+        im=resize(im,(224,224))
         sub_x[j,:,:,:]=im
         temp = np.zeros(24)
         temp[Y[i]]=1
