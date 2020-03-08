@@ -1,13 +1,13 @@
-import tensorflow as tf
-import tensorflow_hub as hub
-from tensorflow.keras import layers
-from tensorflow import keras
 # import cv2
 import pickle
-from sklearn.model_selection import train_test_split
-from scipy.misc import imread,imresize
 
-import pandas as pd
+import tensorflow as tf
+import tensorflow_hub as hub
+from scipy.misc import imread, imresize
+from sklearn.model_selection import train_test_split
+from tensorflow import keras
+from tensorflow.keras import layers
+
 images_path ="../images"
 df_train =open("../dataTraining.csv").readlines()
 # df_test =open("D:\miia4406-movie-genre-classification/dataTesting.csv").readlines()
@@ -48,7 +48,7 @@ def create_batch(X,Y,batch_size,tupl=False):
     j=0
     for i in indices:
         im =imread(X[i].replace("\"","")+".jpeg")
-        im=resize(im,(224,224))
+        im=imresize(im,(224,224))
         sub_x[j,:,:,:]=im
         temp = np.zeros(24)
         temp[Y[i]]=1
