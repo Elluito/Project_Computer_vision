@@ -61,9 +61,14 @@ def create_batch(X,Y,batch_size,prueba=False):
     for i in indices:
         im =Image.open(X[i].replace("\"","")+".jpeg")
 
-        im=im.resize((224,224),Image.BILINEAR)
-        print(np.asarray(im))
-        sub_x[j,:,:,:]=np.asarray(im)/255
+        im=im.resize((224,224),Image.ANTIALIAS)
+        cosa=np.asarray(im)/255
+        if len(cosa.shape)<3:
+            continue
+        if cosa.shape[2]>3:
+            continue
+
+        sub_x[j,:,:,:]=cosa
         temp = np.zeros(24)
         temp[Y[i]]=1
         sub_y[j,:]=temp
