@@ -2,7 +2,6 @@
 import pickle
 
 import tensorflow as tf
-import tensorflow_hub as hub
 from PIL import Image
 from sklearn.model_selection import train_test_split
 from tensorflow import keras
@@ -24,8 +23,8 @@ strategy = tf.distribute.experimental.TPUStrategy(resolver)
 BATCH_SIZE=512
 set_labels = set([])
 dict_labels={}
-feature_extractor_layer = hub.KerasLayer(feature_extractor_url, input_shape=(224, 224, 3))
-feature_extractor_layer.trainable = False
+# feature_extractor_layer = hub.KerasLayer(feature_extractor_url, input_shape=(224, 224, 3))
+# feature_extractor_layer.trainable = False
 def crear_modelo():
     base_model=tf.keras.applications.ResNet101(input_shape=(224,224,3),
                                                include_top=False,
