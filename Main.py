@@ -1,6 +1,6 @@
+import cv2
 import tensorflow as tf
 import tensorflow_hub as hub
-from PIL import Image
 from sklearn.model_selection import train_test_split
 from tensorflow import keras
 from tensorflow.keras import layers
@@ -40,9 +40,8 @@ def create_batch(X,Y,batch_size,tupl=False):
     indices=np.random.choice(range(len(Y)),batch_size)
     j=0
     for i in indices:
-        im =ImportError.open(X[i].replace("\"","")+".jpeg")
-        im=im.resize(224,224,Image.ANTIALIAS)
-        im =np.asarray(im)
+        im =cv2.imread(X[i].replace("\"","")+".jpeg")
+        im=cv2.resize(im,(224,224))
         sub_x[j,:,:,:]=im
         temp = np.zeros(24)
         temp[Y[i]]=1
