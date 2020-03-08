@@ -3,7 +3,7 @@ import pickle
 
 import tensorflow as tf
 import tensorflow_hub as hub
-from scipy.misc import imread, imresize
+from PIL import Image
 from sklearn.model_selection import train_test_split
 from tensorflow import keras
 from tensorflow.keras import layers
@@ -47,9 +47,10 @@ def create_batch(X,Y,batch_size,prueba=False):
     indices=np.random.choice(range(len(Y)),batch_size)
     j=0
     for i in indices:
-        im =imread(X[i].replace("\"","")+".jpeg")
-        im=imresize(im,(224,224))
-        sub_x[j,:,:,:]=im
+        im =Image.open(X[i].replace("\"","")+".jpeg")
+        im=im.resize((224,224),Image.ANTIALIAS)
+
+        sub_x[j,:,:,:]=np.asarray(im)
         temp = np.zeros(24)
         temp[Y[i]]=1
         sub_y[j,:]=temp
