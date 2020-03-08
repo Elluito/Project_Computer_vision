@@ -8,7 +8,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 
 images_path ="../images"
-df_train =open("/dataTraining.csv").readlines()
+df_train =open("../dataTraining.csv").readlines()
 
 feature_extractor_url="https://tfhub.dev/google/imagenet/resnet_v1_101/feature_vector/4"
 
