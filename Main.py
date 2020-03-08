@@ -107,7 +107,15 @@ with strategy.scope():
       keras.metrics.FalseNegatives(name='fn')]
     loss=tf.keras.losses.CategoricalCrossentropy()
     model.compile(optimizer=optim,loss=loss,metrics=metrics)
-self.model.fit(input_fn(),steps_per_epoch=20,epochs=1,verbose=0)
 
+   for i in range(10):
+        x,y=create_batch(X_train,y_train,BATCH_SIZE,tupl=True)
+        x_test,Y_test= create_batch(X_test,y_test,BATCH_SIZE,tupl=True)
+
+        model.fit(x,y,batch_size=50,epoch=10,validation_data=(x_test,Y_test),validation_steps=10)
+        # model.evaluate(x_test,Y_test)
+
+
+model.save("modelo.h5")
 
 pass
