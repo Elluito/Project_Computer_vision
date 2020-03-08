@@ -17,7 +17,7 @@ resolver = tf.distribute.cluster_resolver.TPUClusterResolver(tpu=TPU_WORKER)
 tf.config.experimental_connect_to_cluster(resolver)
 tf.tpu.experimental.initialize_tpu_system(resolver)
 strategy = tf.distribute.experimental.TPUStrategy(resolver)
-
+BATCH_SIZE=512
 set_labels = set([])
 dict_labels={}
 def add_prefix(string):
@@ -61,6 +61,7 @@ def create_batch(X,Y,batch_size,tupl=False):
     with open(PATH_TO_BATCH,"w+b") as fp :
         pickle.dump((sub_x,sub_y),fp)
 
+    return sub_x,sub_y
 
 def input_fn(batch_size=16):
     """An input_fn to parse 28x28 images from filename using tf.data."""
@@ -88,7 +89,7 @@ labels =list(map(transform_labels,labels))
 # for i ,lab in enumerate(set_labels):
 #     dict_labels[lab]=i
 ids = list(map(add_prefix,list(map(give_id,df_train))))
-X_train,X_test,y_rain,_y_train=train_test_split(ids,labels)
+X_train,X_test,y_train,y_test=train_test_split(ids,labels,test_size=0.1)
 
 
 feature_extractor_url="https://tfhub.dev/google/imagenet/resnet_v1_101/feature_vector/4"
@@ -110,7 +111,7 @@ with strategy.scope():
     loss=tf.keras.losses.CategoricalCrossentropy()
     model.compile(optimizer=optim,loss=loss,metrics=metrics)
 
-   for i in range(10):
+   for i in range(1000):
         x,y=create_batch(X_train,y_train,BATCH_SIZE,tupl=True)
         x_test,Y_test= create_batch(X_test,y_test,BATCH_SIZE,tupl=True)
 
