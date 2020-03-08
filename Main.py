@@ -104,21 +104,23 @@ with strategy.scope():
 
     optim=keras.optimizers.Adam(learning_rate=0.001)
     metrics=[keras.metrics.CategoricalAccuracy(name="Categorical_accuracy"),
-        keras.metrics.TruePositives(name='tp'),
-      keras.metrics.FalsePositives(name='fp'),
-      keras.metrics.TrueNegatives(name='tn'),
-      keras.metrics.FalseNegatives(name='fn')]
+            keras.metrics.TruePositives(name='tp'),
+            keras.metrics.FalsePositives(name='fp'),
+            keras.metrics.TrueNegatives(name='tn'),
+            keras.metrics.FalseNegatives(name='fn')]
     loss=tf.keras.losses.CategoricalCrossentropy()
     model.compile(optimizer=optim,loss=loss,metrics=metrics)
 
-   for i in range(1000):
-        x,y=create_batch(X_train,y_train,BATCH_SIZE,tupl=True)
-        x_test,Y_test= create_batch(X_test,y_test,BATCH_SIZE,tupl=True)
+for i in range(10000+1):
+    x,y=create_batch(X_train,y_train,BATCH_SIZE,tupl=True)
+    x_test,Y_test= create_batch(X_test,y_test,BATCH_SIZE,tupl=True)
 
-        model.fit(x,y,batch_size=50,epoch=10,validation_data=(x_test,Y_test),validation_steps=10)
+    model.fit(x,y,batch_size=50,epoch=10,validation_data=(x_test,Y_test),validation_steps=10)
+    if i%100==0:
+        model.save("modelo.h5")
         # model.evaluate(x_test,Y_test)
 
 
-model.save("modelo.h5")
+
 
 pass
