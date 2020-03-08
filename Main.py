@@ -4,6 +4,8 @@ from tensorflow.keras import layers
 from tensorflow import keras
 import cv2
 import pickle
+from sklearn.model_selection import train_test_split
+
 import pandas as pd
 images_path ="../images"
 df_train =open("../dataTraining.csv").readlines()
@@ -86,7 +88,7 @@ labels =list(map(transform_labels,labels))
 # for i ,lab in enumerate(set_labels):
 #     dict_labels[lab]=i
 ids = list(map(add_prefix,list(map(give_id,df_train))))
-
+X_train,X_test,y_rain,_y_train=train_test_split(ids,labels)
 
 
 feature_extractor_url="https://tfhub.dev/google/imagenet/resnet_v1_101/feature_vector/4"
