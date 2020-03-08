@@ -10,6 +10,9 @@ from tensorflow.keras import layers
 
 images_path ="../images"
 df_train =open("../dataTraining.csv").readlines()
+
+feature_extractor_url="https://tfhub.dev/google/imagenet/resnet_v1_101/feature_vector/4"
+
 # df_test =open("D:\miia4406-movie-genre-classification/dataTesting.csv").readlines()
 PATH_TO_BATCH="BATCH"
 
@@ -21,6 +24,14 @@ strategy = tf.distribute.experimental.TPUStrategy(resolver)
 BATCH_SIZE=512
 set_labels = set([])
 dict_labels={}
+feature_extractor_layer = hub.KerasLayer(feature_extractor_url, input_shape=(224, 224, 3))
+feature_extractor_layer.trainable = False
+def crear_modelo():
+
+    model = tf.keras.Sequential([feature_extractor_layer,
+                                 layers.Dense(len(set_labels), activation=keras.activations.hard_sigmoid,
+                                              dtype=tf.float32)])
+    return model
 def add_prefix(string):
     return images_path+"/"+string
 def give_id(string):
@@ -55,9 +66,9 @@ def create_batch(X,Y,batch_size,prueba=False):
         temp[Y[i]]=1
         sub_y[j,:]=temp
         j+=1
-
-    data= tf.data.Dataset.from_tensor_slices((tf.constant(sub_x, dtype=tf.float32), tf.constant(sub_y, dtype=tf.float32))).batch(10)
-    tupla=tf.constant(sub_x,dtype=tf.float32),tf.constant(sub_y,dtype=tf.float32)
+    #
+    # data= tf.data.Dataset.from_tensor_slices((tf.constant(sub_x, dtype=tf.float32), tf.constant(sub_y, dtype=tf.float32))).batch(10)
+    # tupla=tf.constant(sub_x,dtype=tf.float32),tf.constant(sub_y,dtype=tf.float32)
     if prueba:
         with open(PATH_TO_BATCH+"prueba","w+b") as fp :
             pickle.dump((sub_x,sub_y),fp)
@@ -106,13 +117,9 @@ ids = list(map(add_prefix,list(map(give_id,df_train))))
 X_train,X_test,y_train,y_test=train_test_split(ids,labels,test_size=0.1)
 
 
-feature_extractor_url="https://tfhub.dev/google/imagenet/resnet_v1_101/feature_vector/4"
-
 with strategy.scope():
-    feature_extractor_layer = hub.KerasLayer(feature_extractor_url,input_shape=(224,224,3))
-    feature_extractor_layer.trainable = False
-    model = tf.keras.Sequential([feature_extractor_layer,layers.Dense(len(set_labels), activation=keras.activations.hard_sigmoid,dtype=tf.float32)])
 
+    model = crear_modelo()
     optim=keras.optimizers.Adam(learning_rate=0.001)
     metrics=[keras.metrics.CategoricalAccuracy(name="Categorical_accuracy"),
             keras.metrics.TruePositives(name='tp'),
@@ -126,7 +133,7 @@ for i in range(10000+1):
     create_batch(X_train,y_train,BATCH_SIZE,prueba=False)
     create_batch(X_test,y_test,BATCH_SIZE,prueba=True)
 
-    model.fit(input_fn(),batch_size=50,epoch=10,validation_data=input_fn(prueba=True),validation_steps=10)
+    model.fit(input_fn(),batch_size=50,epoch=10)
     if i%100==0:
         model.save("modelo.h5")
         # model.evaluate(x_test,Y_test)
