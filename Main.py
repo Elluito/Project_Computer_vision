@@ -8,7 +8,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 
 images_path ="../images"
-df_train =open("../dataTraining.csv").readlines()
+df_train =open("/dataTraining.csv").readlines()
 
 feature_extractor_url="https://tfhub.dev/google/imagenet/resnet_v1_101/feature_vector/4"
 
@@ -60,8 +60,9 @@ def create_batch(X,Y,batch_size,prueba=False):
     j=0
     for i in indices:
         im =Image.open(X[i].replace("\"","")+".jpeg")
-        im=im.resize((224,224),Image.ANTIALIAS)
 
+        im=im.resize((224,224),Image.BILINEAR)
+        print(np.asarray(im))
         sub_x[j,:,:,:]=np.asarray(im)/255
         temp = np.zeros(24)
         temp[Y[i]]=1
