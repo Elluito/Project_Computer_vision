@@ -41,7 +41,7 @@ def give_label(string):
         set_labels.add(i.strip())
     return cos.strip()
 
-def create_batch(X,Y,batch_size,tupl=False):
+def create_batch(X,Y,batch_size,prueba=False):
     sub_x=np.zeros((batch_size,224,224,3))
     sub_y=np.zeros((batch_size,24))
     indices=np.random.choice(range(len(Y)),batch_size)
@@ -57,30 +57,42 @@ def create_batch(X,Y,batch_size,tupl=False):
 
     data= tf.data.Dataset.from_tensor_slices((tf.constant(sub_x, dtype=tf.float32), tf.constant(sub_y, dtype=tf.float32))).batch(10)
     tupla=tf.constant(sub_x,dtype=tf.float32),tf.constant(sub_y,dtype=tf.float32)
-    if not tupl:
-        return data
-    with open(PATH_TO_BATCH,"w+b") as fp :
-        pickle.dump((sub_x,sub_y),fp)
+    if prueba:
+        with open(PATH_TO_BATCH+"prueba","w+b") as fp :
+            pickle.dump((sub_x,sub_y),fp)
+    else:
+        with open(PATH_TO_BATCH,"w+b") as fp :
+            pickle.dump((sub_x,sub_y),fp)
 
-    return sub_x,sub_y
-
-def input_fn(batch_size=16):
+def input_fn(prueba=False,batch_size=16):
     """An input_fn to parse 28x28 images from filename using tf.data."""
     # batch_size = params["batch_size"]
     # with tf.io.gfile.GFile(PATH_TO_BATCH, 'r+b') as f:
     #     txt = f.read()
     # source=tf.constant(txt, dtype=tf.float32)
     # print(source)
-    with open(PATH_TO_BATCH,"r+b") as fp:
-        state_batch,q_values = pickle.load(fp)
-    state_batch =tf.constant(state_batch,dtype=tf.float32)
-    q_values = tf.constant(q_values,dtype=tf.float32)
+    if prueba:
+        with open(PATH_TO_BATCH+"prueba","r+b") as fp:
+            state_batch,q_values = pickle.load(fp)
+        state_batch =tf.constant(state_batch,dtype=tf.float32)
+        q_values = tf.constant(q_values,dtype=tf.float32)
 
-    prob_dataset = tf.data.Dataset.from_tensor_slices((state_batch,q_values))
+        prob_dataset = tf.data.Dataset.from_tensor_slices((state_batch,q_values))
 
-    batchd_prob = prob_dataset.batch(batch_size, drop_remainder=True)
-    # batchd_prob =batchd_prob.cache()
-    return batchd_prob.repeat()
+        batchd_prob = prob_dataset.batch(batch_size, drop_remainder=True)
+        # batchd_prob =batchd_prob.cache()
+        return batchd_prob.repeat()
+    else:
+        with open(PATH_TO_BATCH,"r+b") as fp:
+            state_batch, q_values = pickle.load(fp)
+        state_batch =tf.constant(state_batch, dtype=tf.float32)
+        q_values = tf.constant(q_values, dtype=tf.float32)
+
+        prob_dataset = tf.data.Dataset.from_tensor_slices((state_batch, q_values))
+
+        batchd_prob = prob_dataset.batch(batch_size, drop_remainder=True)
+        # batchd_prob =batchd_prob.cache()
+        return batchd_prob.repeat()
 
 del df_train[0]
 labels =list(map(give_label,df_train))
@@ -110,10 +122,10 @@ with strategy.scope():
     model.compile(optimizer=optim,loss=loss,metrics=metrics)
 
 for i in range(10000+1):
-    x,y=create_batch(X_train,y_train,BATCH_SIZE,tupl=True)
-    x_test,Y_test= create_batch(X_test,y_test,BATCH_SIZE,tupl=True)
+    create_batch(X_train,y_train,BATCH_SIZE,prueba=False)
+    create_batch(X_test,y_test,BATCH_SIZE,prueba=True)
 
-    model.fit(x,y,batch_size=50,epoch=10,validation_data=(x_test,Y_test),validation_steps=10)
+    model.fit(input_fn(),batch_size=50,epoch=10,validation_data=input_fn(prueba=True),validation_steps=10)
     if i%100==0:
         model.save("modelo.h5")
         # model.evaluate(x_test,Y_test)
