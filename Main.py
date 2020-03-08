@@ -27,10 +27,12 @@ dict_labels={}
 feature_extractor_layer = hub.KerasLayer(feature_extractor_url, input_shape=(224, 224, 3))
 feature_extractor_layer.trainable = False
 def crear_modelo():
+    base_model=tf.keras.applications.ResNet101(input_shape=(224,224,3),
+                                               include_top=False,
+                                               weights='imagenet')
+    global_average_layer = tf.keras.layers.GlobalAveragePooling2D()
 
-    model = tf.keras.Sequential([feature_extractor_layer,
-                                 layers.Dense(len(set_labels), activation=keras.activations.hard_sigmoid,
-                                              dtype=tf.float32)])
+    model = tf.keras.Sequential([base_model,global_average_layer,layers.Dense(len(set_labels), activation=keras.activations.hard_sigmoid,dtype=tf.float32)])
     return model
 def add_prefix(string):
     return images_path+"/"+string
@@ -61,7 +63,7 @@ def create_batch(X,Y,batch_size,prueba=False):
         im =Image.open(X[i].replace("\"","")+".jpeg")
         im=im.resize((224,224),Image.ANTIALIAS)
 
-        sub_x[j,:,:,:]=np.asarray(im)
+        sub_x[j,:,:,:]=np.asarray(im)/255
         temp = np.zeros(24)
         temp[Y[i]]=1
         sub_y[j,:]=temp
