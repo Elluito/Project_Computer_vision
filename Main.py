@@ -127,7 +127,7 @@ X_train,X_test,y_train,y_test=train_test_split(ids,labels,test_size=0.1)
 with strategy.scope():
 
     model = crear_modelo()
-    optim=keras.optimizers.RMSprop(learning_rate=0.00001,momentum=0.002)
+    optim=keras.optimizers.SGD(learning_rate=0.00001,momentum=0.002)
     metrics=[keras.metrics.CategoricalAccuracy(name="Categorical_accuracy"),
             keras.metrics.TruePositives(name='tp'),
             keras.metrics.FalsePositives(name='fp'),
