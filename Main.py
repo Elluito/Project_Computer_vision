@@ -67,6 +67,7 @@ def create_batch(X,Y,batch_size,prueba=False):
         if cosa.shape[2]>3:
             continue
         if np.count_nonzero(cosa)<224*224*0.1:
+            print("TIRE UN DATO QUE DABA 0S")
             continue
         sub_x[j,:,:,:]=cosa
         temp = np.zeros(24)
@@ -102,7 +103,7 @@ def input_fn(prueba=False,batch_size=16):
 
         batchd_prob = prob_dataset.batch(batch_size, drop_remainder=True)
         # batchd_prob =batchd_prob.cache()
-        return batchd_prob
+        return batchd_prob.repeat()
     else:
         with open(PATH_TO_BATCH,"r+b") as fp:
             state_batch, q_values = pickle.load(fp)
@@ -112,7 +113,7 @@ def input_fn(prueba=False,batch_size=16):
 
         batchd_prob = prob_dataset.batch(batch_size, drop_remainder=True)
         # batchd_prob =batchd_prob.cache()
-        return batchd_prob
+        return batchd_prob.repeat()
 
 del df_train[0]
 labels =list(map(give_label,df_train))
