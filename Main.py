@@ -133,7 +133,7 @@ with strategy.scope():
             keras.metrics.FalsePositives(name='fp'),
             keras.metrics.TrueNegatives(name='tn'),
             keras.metrics.FalseNegatives(name='fn')]
-    loss=tf.keras.losses.CategoricalCrossentropy()
+    loss=tf.keras.losses.CategoricalCrossentropy(from_logits=True,label_smoothing=0.3)
     model.compile(optimizer=optim,loss=loss,metrics=metrics)
 
 for i in range(10000+1):
