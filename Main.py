@@ -60,7 +60,7 @@ def create_batch(X,Y,batch_size,prueba=False):
     j=0
     for i in indices:
         im =Image.open(X[i].replace("\"","")+".jpeg")
-        im.tumbnail((224,224),Image.ANTIALIAS)
+        im.thumbnail((224,224),Image.ANTIALIAS)
         im=im.resize((224,224),Image.ANTIALIAS)
         cosa=np.asarray(im)/255
         if len(cosa.shape)<3:
