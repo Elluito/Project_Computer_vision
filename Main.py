@@ -62,7 +62,7 @@ def create_batch(X,Y,batch_size,prueba=False):
         im =Image.open(X[i].replace("\"","")+".jpeg")
         im.thumbnail((224,224),Image.ANTIALIAS)
         im=im.resize((224,224),Image.ANTIALIAS)
-        cosa=np.asarray(im)/255
+        cosa=np.asarray(im)
         if len(cosa.shape)<3:
             continue
         if cosa.shape[2]>3:
@@ -98,7 +98,7 @@ def input_fn(prueba=False,batch_size=16):
         # def mean ():
 
 
-        prob_dataset = tf.data.Dataset.from_tensor_slices((state_batch,q_values)).apply()
+        prob_dataset = tf.data.Dataset.from_tensor_slices((state_batch,q_values))
 
         batchd_prob = prob_dataset.batch(batch_size, drop_remainder=True)
         # batchd_prob =batchd_prob.cache()
