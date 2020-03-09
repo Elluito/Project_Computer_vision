@@ -127,13 +127,13 @@ X_train,X_test,y_train,y_test=train_test_split(ids,labels,test_size=0.1)
 with strategy.scope():
 
     model = crear_modelo()
-    optim=keras.optimizers.SGD(learning_rate=0.00001,momentum=0.002)
+    optim=keras.optimizers.SGD(learning_rate=0.000001,momentum=0.00002)
     metrics=[keras.metrics.CategoricalAccuracy(name="Categorical_accuracy"),
             keras.metrics.TruePositives(name='tp'),
             keras.metrics.FalsePositives(name='fp'),
             keras.metrics.TrueNegatives(name='tn'),
             keras.metrics.FalseNegatives(name='fn')]
-    loss=tf.keras.losses.CategoricalCrossentropy(from_logits=True,label_smoothing=0.3)
+    loss=tf.keras.losses.CategoricalCrossentropy(label_smoothing=0.5)
     model.compile(optimizer=optim,loss=loss,metrics=metrics)
 
 for i in range(10000+1):
