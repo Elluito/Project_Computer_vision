@@ -100,7 +100,7 @@ def input_fn(prueba=False,batch_size=16):
 
         batchd_prob = prob_dataset.batch(batch_size, drop_remainder=True)
         # batchd_prob =batchd_prob.cache()
-        return batchd_prob.repeat()
+        return batchd_prob
     else:
         with open(PATH_TO_BATCH,"r+b") as fp:
             state_batch, q_values = pickle.load(fp)
@@ -111,7 +111,7 @@ def input_fn(prueba=False,batch_size=16):
 
         batchd_prob = prob_dataset.batch(batch_size, drop_remainder=True)
         # batchd_prob =batchd_prob.cache()
-        return batchd_prob.repeat()
+        return batchd_prob
 
 del df_train[0]
 labels =list(map(give_label,df_train))
@@ -134,7 +134,7 @@ with strategy.scope():
             keras.metrics.TrueNegatives(name='tn'),
             keras.metrics.FalseNegatives(name='fn')]
     loss=tf.keras.losses.CategoricalCrossentropy(label_smoothing=0.5)
-    model.compile(optimizer=optim,loss=loss,metrics=metrics)
+    model.compile(optimizer=optim,loss=loss,metrics=metrics,callbacks=[tf.keras.callbacks.TerminateOnNaN()])
 
 for i in range(10000+1):
     create_batch(X_train,y_train,BATCH_SIZE,prueba=False)
