@@ -135,13 +135,13 @@ with strategy.scope():
             keras.metrics.TrueNegatives(name='tn'),
             keras.metrics.FalseNegatives(name='fn')]
     loss=tf.keras.losses.CategoricalCrossentropy(label_smoothing=0.5)
-    model.compile(optimizer=optim,loss=loss,metrics=metrics,callbacks=[tf.keras.callbacks.TerminateOnNaN()])
+    model.compile(optimizer=optim,loss=loss,metrics=metrics)
 
 for i in range(10000+1):
     create_batch(X_train,y_train,BATCH_SIZE,prueba=False)
     create_batch(X_test,y_test,BATCH_SIZE,prueba=True)
 
-    model.fit(input_fn(),epochs=10,steps_per_epoch=10)
+    model.fit(input_fn(),epochs=10,steps_per_epoch=10,callbacks=[tf.keras.callbacks.TerminateOnNaN()])
     print("EAVULATION PHASE")
     model.evaluate(input_fn(prueba=True),steps=100)
     if i%100==0:
