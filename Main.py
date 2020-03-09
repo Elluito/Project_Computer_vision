@@ -66,7 +66,7 @@ def create_batch(X,Y,batch_size,prueba=False):
             continue
         if cosa.shape[2]>3:
             continue
-        if np.all(cosa):
+        if np.count_nonzero(cosa)<224*224*0.1:
             continue
         sub_x[j,:,:,:]=cosa
         temp = np.zeros(24)
@@ -108,8 +108,6 @@ def input_fn(prueba=False,batch_size=16):
             state_batch, q_values = pickle.load(fp)
         state_batch =tf.constant(state_batch, dtype=tf.float32)
         q_values = tf.constant(q_values, dtype=tf.float32)
-        print(state_batch)
-
         prob_dataset = tf.data.Dataset.from_tensor_slices((state_batch, q_values))
 
         batchd_prob = prob_dataset.batch(batch_size, drop_remainder=True)
