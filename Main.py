@@ -95,8 +95,10 @@ def input_fn(prueba=False,batch_size=16):
             state_batch,q_values = pickle.load(fp)
         state_batch =tf.constant(state_batch,dtype=tf.float32)
         q_values = tf.constant(q_values,dtype=tf.float32)
+        # def mean ():
 
-        prob_dataset = tf.data.Dataset.from_tensor_slices((state_batch,q_values))
+
+        prob_dataset = tf.data.Dataset.from_tensor_slices((state_batch,q_values)).apply()
 
         batchd_prob = prob_dataset.batch(batch_size, drop_remainder=True)
         # batchd_prob =batchd_prob.cache()
@@ -106,7 +108,7 @@ def input_fn(prueba=False,batch_size=16):
             state_batch, q_values = pickle.load(fp)
         state_batch =tf.constant(state_batch, dtype=tf.float32)
         q_values = tf.constant(q_values, dtype=tf.float32)
-        print(q_values)
+        print(state_batch)
 
         prob_dataset = tf.data.Dataset.from_tensor_slices((state_batch, q_values))
 
@@ -128,7 +130,7 @@ X_train,X_test,y_train,y_test=train_test_split(ids,labels,test_size=0.1)
 with strategy.scope():
 
     model = crear_modelo()
-    optim=keras.optimizers.SGD(learning_rate=0.000001,momentum=0.00002)
+    optim=keras.optimizers.SGD(learning_rate=0.00001,momentum=0.00002)
     metrics=[keras.metrics.CategoricalAccuracy(name="Categorical_accuracy"),
             keras.metrics.TruePositives(name='tp'),
             keras.metrics.FalsePositives(name='fp'),
