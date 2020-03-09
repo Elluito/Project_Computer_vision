@@ -141,7 +141,7 @@ for i in range(10000+1):
     create_batch(X_test,y_test,BATCH_SIZE,prueba=True)
 
     model.fit(input_fn(),epochs=10,steps_per_epoch=10)
-    model.evaluate(input_fn(prueba=True))
+    model.evaluate(input_fn(prueba=True),stpes=100)
     if i%100==0:
         model.save("modelo.h5")
         # model.evaluate(x_test,Y_test)
