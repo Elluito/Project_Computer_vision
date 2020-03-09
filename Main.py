@@ -31,7 +31,7 @@ def crear_modelo():
                                                weights='imagenet')
     global_average_layer = tf.keras.layers.GlobalAveragePooling2D()
 
-    model = tf.keras.Sequential([base_model,global_average_layer,keras.layers.BatchNormalization(),keras.layers.Dropout(rate=0.2),layers.Dense(len(set_labels), activation=keras.activations.hard_sigmoid,dtype=tf.float32)])
+    model = tf.keras.Sequential([base_model,global_average_layer,keras.layers.BatchNormalization(),keras.layers.Dropout(rate=0.2),layers.Dense(len(set_labels), activation=keras.activations.sigmoid,dtype=tf.float32)])
     return model
 def add_prefix(string):
     return images_path+"/"+string
