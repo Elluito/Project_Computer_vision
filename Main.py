@@ -106,6 +106,7 @@ def input_fn(prueba=False,batch_size=16):
             state_batch, q_values = pickle.load(fp)
         state_batch =tf.constant(state_batch, dtype=tf.float32)
         q_values = tf.constant(q_values, dtype=tf.float32)
+        print(q_values)
 
         prob_dataset = tf.data.Dataset.from_tensor_slices((state_batch, q_values))
 
